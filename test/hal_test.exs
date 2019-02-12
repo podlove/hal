@@ -33,6 +33,26 @@ defmodule HALTest do
     assert format(doc1) == format(doc2)
   end
 
+  test "can add embeds" do
+    podcast = %HAL.Document{properties: %{id: 18}}
+    episode1 = %HAL.Document{properties: %{id: 81}}
+    episode2 = %HAL.Document{properties: %{id: 82}}
+
+    doc1 = %HAL.Document{
+      embeds: [
+        %Embed{resource: "rad:podcast", embed: podcast},
+        %Embed{resource: "rad:episode", embed: [episode1, episode2]}
+      ]
+    }
+
+    doc2 =
+      %HAL.Document{}
+      |> Document.add_embed(%Embed{resource: "rad:podcast", embed: podcast})
+      |> Document.add_embed(%Embed{resource: "rad:episode", embed: [episode1, episode2]})
+
+    assert format(doc1) == format(doc2)
+  end
+
   test "renders empty document" do
     assert Jason.encode!(%Document{}) == "{}"
   end

@@ -5,7 +5,7 @@ defmodule HAL.Document do
     end
   end
 
-  defstruct embeds: nil, links: [], properties: %{}
+  defstruct embeds: [], links: [], properties: %{}
 
   @type t :: %__MODULE__{
           embeds: [HAL.Embed.t()] | nil,
@@ -23,11 +23,12 @@ defmodule HAL.Document do
     %{document | properties: Map.put(document.properties, key, value)}
   end
 
-  defmodule MapConverter do
-    def convert_properties(map, nil) do
-      map
-    end
+  @spec add_embed(HAL.Document.t(), HAL.Embed.t()) :: HAL.Document.t()
+  def add_embed(document, embed) do
+    %{document | embeds: [embed | document.embeds]}
+  end
 
+  defmodule MapConverter do
     def convert_properties(map, properties) do
       for {key, val} <- properties, into: map, do: {key, val}
     end
@@ -48,7 +49,7 @@ defmodule HAL.Document do
     def add_link_title(link, nil), do: link
     def add_link_title(link, title), do: Map.put(link, :title, title)
 
-    def convert_embeds(map, nil) do
+    def convert_embeds(map, []) do
       map
     end
 
