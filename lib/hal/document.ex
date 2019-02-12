@@ -5,23 +5,17 @@ defmodule HAL.Document do
     end
   end
 
-  defstruct [:embeds, :links, :properties]
+  defstruct embeds: nil, links: [], properties: %{}
 
   @type t :: %__MODULE__{
           embeds: [HAL.Embed.t()] | nil,
-          links: [HAL.Link.t()] | nil,
-          properties: map() | nil
+          links: [HAL.Link.t()] | [],
+          properties: map()
         }
 
   @spec add_link(HAL.Document.t(), HAL.Link.t()) :: HAL.Document.t()
   def add_link(document, link) do
-    links =
-      case document.links do
-        nil -> [link]
-        links when is_list(links) -> [link | links]
-      end
-
-    Map.put(document, :links, links)
+    %{document | links: [link | document.links]}
   end
 
   defmodule MapConverter do
@@ -33,7 +27,7 @@ defmodule HAL.Document do
       for {key, val} <- properties, into: map, do: {key, val}
     end
 
-    def convert_links(map, nil) do
+    def convert_links(map, []) do
       map
     end
 
