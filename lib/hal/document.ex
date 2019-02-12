@@ -13,47 +13,49 @@ defmodule HAL.Document do
           properties: map() | nil
         }
 
+  defmodule MapConverter do
+    def convert_properties(map, nil) do
+      map
+    end
+
+    def convert_properties(map, properties) do
+      for {key, val} <- properties, into: map, do: {key, val}
+    end
+
+    def convert_links(map, nil) do
+      map
+    end
+
+    def convert_links(map, links) do
+      data =
+        links
+        |> Enum.map(fn link -> {link.rel, %{href: link.href} |> add_link_title(link.title)} end)
+        |> Enum.into(%{})
+
+      Map.put(map, "_links", data)
+    end
+
+    def add_link_title(link, nil), do: link
+    def add_link_title(link, title), do: Map.put(link, :title, title)
+
+    def convert_embeds(map, nil) do
+      map
+    end
+
+    def convert_embeds(map, embeds) do
+      data =
+        embeds
+        |> Enum.map(fn embed -> {embed.resource, embed.embed} end)
+        |> Enum.into(%{})
+
+      Map.put(map, "_embedded", data)
+    end
+  end
+
   def to_map(%HAL.Document{} = document) do
     %{}
-    |> add_properties(document.properties)
-    |> add_links(document.links)
-    |> add_embeds(document.embeds)
-  end
-
-  defp add_properties(map, nil) do
-    map
-  end
-
-  defp add_properties(map, properties) do
-    for {key, val} <- properties, into: map, do: {key, val}
-  end
-
-  defp add_links(map, nil) do
-    map
-  end
-
-  defp add_links(map, links) do
-    data =
-      links
-      |> Enum.map(fn link -> {link.rel, %{href: link.href} |> add_link_title(link.title)} end)
-      |> Enum.into(%{})
-
-    Map.put(map, "_links", data)
-  end
-
-  defp add_link_title(link, nil), do: link
-  defp add_link_title(link, title), do: Map.put(link, :title, title)
-
-  defp add_embeds(map, nil) do
-    map
-  end
-
-  defp add_embeds(map, embeds) do
-    data =
-      embeds
-      |> Enum.map(fn embed -> {embed.resource, embed.embed} end)
-      |> Enum.into(%{})
-
-    Map.put(map, "_embedded", data)
+    |> MapConverter.convert_properties(document.properties)
+    |> MapConverter.convert_links(document.links)
+    |> MapConverter.convert_embeds(document.embeds)
   end
 end
