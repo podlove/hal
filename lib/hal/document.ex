@@ -13,6 +13,17 @@ defmodule HAL.Document do
           properties: map() | nil
         }
 
+  @spec add_link(HAL.Document.t(), HAL.Link.t()) :: HAL.Document.t()
+  def add_link(document, link) do
+    links =
+      case document.links do
+        nil -> [link]
+        links when is_list(links) -> [link | links]
+      end
+
+    Map.put(document, :links, links)
+  end
+
   defmodule MapConverter do
     def convert_properties(map, nil) do
       map

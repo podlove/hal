@@ -6,6 +6,22 @@ defmodule HALTest do
   alias HAL.Embed
   alias HAL.Link
 
+  test "can add links" do
+    doc1 = %HAL.Document{
+      links: [
+        %Link{rel: "self", href: "/foo"},
+        %Link{rel: "next", href: "/foo?page=2", title: "Page 2"}
+      ]
+    }
+
+    doc2 =
+      %Document{}
+      |> Document.add_link(%Link{rel: "self", href: "/foo"})
+      |> Document.add_link(%Link{rel: "next", href: "/foo?page=2", title: "Page 2"})
+
+    assert format(doc1) == format(doc2)
+  end
+
   test "renders empty document" do
     assert Jason.encode!(%Document{}) == "{}"
   end
@@ -58,9 +74,13 @@ defmodule HALTest do
     ))
   end
 
-  defp format(json) do
+  defp format(json) when is_binary(json) do
     json
     |> Jason.decode!()
     |> Jason.encode!()
+  end
+
+  defp format(json) do
+    format(Jason.encode!(json))
   end
 end
