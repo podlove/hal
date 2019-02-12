@@ -3,16 +3,17 @@ defmodule HALTest do
   doctest HAL
 
   alias HAL.Document
+  alias HAL.Embed
   alias HAL.Link
 
   test "renders empty document" do
-    assert Document.render(%Document{}) == "{}"
+    assert Jason.encode!(%Document{}) == "{}"
   end
 
   test "renders properties" do
     document = %HAL.Document{properties: %{foo: 42, bar: "baz"}}
 
-    assert Document.render(document) == format(~S({"foo": 42, "bar": "baz"}))
+    assert Jason.encode!(document) == format(~S({"foo": 42, "bar": "baz"}))
   end
 
   test "renders links" do
@@ -23,13 +24,38 @@ defmodule HALTest do
       ]
     }
 
-    assert Document.render(document) ==
-             format(~S({
-               "_links": {
-                 "self": { "href": "/foo" },
-                 "next": { "href": "/foo?page=2", "title": "Page 2"}
-                }
-             }))
+    assert Jason.encode!(document) == format(~S(
+      {
+        "_links": {
+          "self": { "href": "/foo" },
+          "next": { "href": "/foo?page=2", "title": "Page 2"}
+         }
+      }
+    ))
+  end
+
+  test "renders embeds" do
+    podcast = %HAL.Document{properties: %{id: 18}}
+    episode1 = %HAL.Document{properties: %{id: 81}}
+    episode2 = %HAL.Document{properties: %{id: 82}}
+
+    document = %HAL.Document{
+      properties: %{title: "Example"},
+      embeds: [
+        %Embed{resource: "rad:podcast", embed: podcast},
+        %Embed{resource: "rad:episode", embed: [episode1, episode2]}
+      ]
+    }
+
+    assert format(Jason.encode!(document)) == format(~S(
+      {
+        "_embedded": {
+          "rad:podcast": { "id": 18 },
+          "rad:episode": [{ "id": 81 }, { "id": 82 }]
+         },
+         "title": "Example"
+      }
+    ))
   end
 
   defp format(json) do
