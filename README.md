@@ -1,5 +1,7 @@
 # HAL
 
+[![Build Status](https://travis-ci.org/podlove/hal.svg?branch=master)](https://travis-ci.org/podlove/hal)
+
 Generate JSON in [HAL](http://stateless.co/hal_specification.html) format.
 
 ## Usage
