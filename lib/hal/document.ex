@@ -13,6 +13,7 @@ defmodule HAL.Document do
           properties: map()
         }
 
+  # TODO: support add_link(document, "self", href)
   @spec add_link(HAL.Document.t(), HAL.Link.t()) :: HAL.Document.t()
   def add_link(document, link) do
     %{document | links: [link | document.links]}
@@ -23,6 +24,7 @@ defmodule HAL.Document do
     %{document | properties: Map.put(document.properties, key, value)}
   end
 
+  # TODO: support add_embed(document, "ns:name", embed)
   @spec add_embed(HAL.Document.t(), HAL.Embed.t()) :: HAL.Document.t()
   def add_embed(document, embed) do
     %{document | embeds: [embed | document.embeds]}
