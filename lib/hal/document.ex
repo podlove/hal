@@ -18,6 +18,11 @@ defmodule HAL.Document do
     %{document | links: [link | document.links]}
   end
 
+  @spec add_property(HAL.Document.t(), atom(), any()) :: HAL.Document.t()
+  def add_property(document, key, value) do
+    %{document | properties: Map.put(document.properties, key, value)}
+  end
+
   defmodule MapConverter do
     def convert_properties(map, nil) do
       map

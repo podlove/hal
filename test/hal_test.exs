@@ -22,6 +22,17 @@ defmodule HALTest do
     assert format(doc1) == format(doc2)
   end
 
+  test "can add properties" do
+    doc1 = %HAL.Document{properties: %{foo: 42, bar: "baz"}}
+
+    doc2 =
+      %HAL.Document{}
+      |> Document.add_property(:foo, 42)
+      |> Document.add_property(:bar, "baz")
+
+    assert format(doc1) == format(doc2)
+  end
+
   test "renders empty document" do
     assert Jason.encode!(%Document{}) == "{}"
   end
