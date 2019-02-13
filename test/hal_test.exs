@@ -33,6 +33,19 @@ defmodule HALTest do
     assert format(doc1) == format(doc2)
   end
 
+  test "can add multiple properties at once" do
+    doc1 = %HAL.Document{properties: %{foo: 42, bar: "baz"}}
+
+    doc2 =
+      %HAL.Document{}
+      |> Document.add_properties(%{
+        foo: 42,
+        bar: "baz"
+      })
+
+    assert format(doc1) == format(doc2)
+  end
+
   test "can add embeds" do
     podcast = %HAL.Document{properties: %{id: 18}}
     episode1 = %HAL.Document{properties: %{id: 81}}

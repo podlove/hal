@@ -24,6 +24,13 @@ defmodule HAL.Document do
     %{document | properties: Map.put(document.properties, key, value)}
   end
 
+  @spec add_properties(HAL.Document.t(), map()) :: HAL.Document.t()
+  def add_properties(document, properties) when is_map(properties) do
+    Enum.reduce(properties, document, fn {k, v}, document ->
+      add_property(document, k, v)
+    end)
+  end
+
   # TODO: support add_embed(document, "ns:name", embed)
   @spec add_embed(HAL.Document.t(), HAL.Embed.t()) :: HAL.Document.t()
   def add_embed(document, embed) do
